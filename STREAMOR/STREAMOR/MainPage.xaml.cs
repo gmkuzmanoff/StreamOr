@@ -1,6 +1,4 @@
-﻿using Android.InputMethodServices;
-using Android.Support.V4.Media.Session;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -35,10 +33,25 @@ namespace STREAMOR
             PermissionsGrand();
             
             InitializeComponent();
-            
+
+            GetSettings();
             picker_sort.SelectedIndex = 0;
         }
 
+        private void GetSettings()
+        {
+            XmlDocument document = new XmlDocument();
+            document.Load(xmlFile);
+            XmlNode settings = document.DocumentElement.FirstChild;
+            //Get Theme
+            XmlNode theme = settings.ChildNodes[0];
+            picker_theme.SelectedIndex = int.Parse(theme.InnerText);
+            //Get Vibration
+            XmlNode vibration = settings.ChildNodes[1];
+            picker_vibration.SelectedIndex = int.Parse(vibration.InnerText);
+        }
+
+        //----------------------Create Timer --------------------------
         private void StartTimer()
         {
             if (timer.Enabled)
@@ -79,6 +92,7 @@ namespace STREAMOR
             });
             
         }
+        //--------------------------End---------------------------------
 
         protected override bool OnBackButtonPressed()
         {
@@ -93,6 +107,10 @@ namespace STREAMOR
             else if (stack_editStation.TranslationX == 0)
             {
                 CloseEditStationPage();
+            }
+            else if (stack_settings.TranslationX == 0)
+            {
+                CloseSettingsPage();
             }
             else
             {
@@ -148,6 +166,12 @@ namespace STREAMOR
             entry_titleOnEdit.Text = "";
             entry_pictureUrlOnEdit.Text = "";
             entry_genreOnEdit.Text = "";
+            counterMenuTapping = 0;
+        }
+
+        private async Task CloseSettingsPage()
+        {
+            await stack_settings.TranslateTo(-400, 0, 250, Easing.SpringIn);
             counterMenuTapping = 0;
         }
 
@@ -465,7 +489,6 @@ namespace STREAMOR
                 bool isFavor = bool.Parse(node.ChildNodes[6].InnerText);
                 radioList.Add(new RadioStation(title, genre, pictureUrl, url, bitrate, desc, isFavor));
             }
-            
         }
 
         private void CreateDirAndFile()
@@ -488,27 +511,54 @@ namespace STREAMOR
         public void CreateXmlFile()
         {
             Thread.Sleep(2000);
+            //Create Root Element
             XDocument document = new XDocument();
             XElement rootElement = new XElement("Radios");
+            //Create Settings Node
+            XElement settings = new XElement("Settings");
+            XElement theme = new XElement("Theme");
+            theme.Value = "0";
+            XElement vibration = new XElement("Vibration");
+            vibration.Value = "0";
+
             document.Add(rootElement);
+            rootElement.Add(settings);
+            settings.Add(theme);
+            settings.Add(vibration);
             document.Save(xmlFile);
         }
 
         private async void lv_radios_ItemTapped(object sender, ItemTappedEventArgs e)
-        {
+        {//#FAFA32
+            Color[] colors = {Color.GreenYellow, Color.Yellow, Color.Aquamarine, Color.SkyBlue, Color.Beige, Color.Orange, Color.Lime};
+            int random1 = new Random().Next(0, 6);
+            int random2 = new Random().Next(0, 6);
             frame_onAir.IsVisible = true;
             stack_onAir.IsVisible = true;
             target = (RadioStation)e.Item;
 
+            //Button "Listen now" animation
             await frame_onAir.ScaleTo(1.2, 150, Easing.CubicIn);
-            await frame_onAir.ScaleTo(1, 100, Easing.CubicOut);
+             frame_onAir.ScaleTo(1, 100, Easing.CubicOut);
 
-            //await lbl_selected_radio_genre.FadeTo(0, 100);
-            //await lbl_selected_radio_title.FadeTo(0, 100);
-            lbl_selected_radio_title.Text = target.Title;
+            await lbl_selected_radio_genre.TranslateTo(-400, 0, 100, Easing.SpringIn);
+            await lbl_selected_radio_title.TranslateTo(-400, 0, 100, Easing.SpringIn);
             lbl_selected_radio_genre.Text = target.Genre;
-            //lbl_selected_radio_title.FadeTo(1, 100);
-            //lbl_selected_radio_genre.FadeTo(1, 100);
+            lbl_selected_radio_title.TextColor = colors[random1];
+            lbl_selected_radio_title.Text = target.Title;
+            lbl_selected_radio_genre.TextColor = colors[random2];
+            await lbl_selected_radio_genre.TranslateTo(0, 0, 150, Easing.SpringOut);
+            await lbl_selected_radio_title.TranslateTo(0, 0, 150, Easing.SpringOut);
+
+            //Button "Edit" animation
+            await btn_edit.RotateYTo(180, 150);
+             btn_edit.RotateYTo(0, 100);
+
+            //Button "Delete" animation
+            await btn_delete.RotateYTo(90, 150);
+             btn_delete.RotateYTo(0, 100);
+
+           
         }
 
         private void picker_sort_SelectedIndexChanged(object sender, EventArgs e)
@@ -532,6 +582,7 @@ namespace STREAMOR
 
         private async void btn_ListenNow_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             vlc.LoadMedia(target.Url);
             await stack_player.TranslateTo(0, 0, 250, Easing.SpringOut);
             if (lbl_player_targetTitle.Text != target.Title)
@@ -561,7 +612,6 @@ namespace STREAMOR
                         return radioList.OrderByDescending(x => x.Title);
                     default:
                         return radioList;
-                        break;
                 }
             }
             else
@@ -579,6 +629,7 @@ namespace STREAMOR
 
         private async void lbl_menu_icon_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             if (counterMenuTapping == 0)
             {
                 await OpenMenu();
@@ -598,11 +649,13 @@ namespace STREAMOR
 
         private async void imgbtn_back_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await CloseAddStationPage();
         }
 
         private async void btn_addStation_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await CloseMenu();
             await stack_addStation.TranslateTo(0, 0, 250, Easing.SpringOut);
             
@@ -610,11 +663,13 @@ namespace STREAMOR
 
         private async void btn_cancelAddStation_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await CloseAddStationPage();
         }
 
         private async void btn_okAddStation_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             string title = "";
             string genre = "";
             string pictureUrl = "";
@@ -741,13 +796,20 @@ namespace STREAMOR
             lv_radios.ScrollTo(radioList.Last(), ScrollToPosition.MakeVisible, true);
         }
 
-        private void btn_Exit_Clicked(object sender, EventArgs e)
+        private async void btn_Exit_Clicked(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            MakeVibration();
+            var result = await DisplayAlert("Close dialog", "You want to close Streamor?", "Close Streamor", "Not now");
+            if (result == true)
+            {
+                Environment.Exit(0);
+            }
+            
         }
 
         private async void btn_delete_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             bool result = await DisplayAlert("ℹ️ Confirm", $"DELETE ({target.Title})!\nAre you sure?", "Delete", "Cancel");
             if (result)
             {
@@ -775,6 +837,7 @@ namespace STREAMOR
 
         private async void btn_edit_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await stack_editStation.TranslateTo(0, 0, 250, Easing.SpringOut);
             entry_stationUrlOnEdit.Text = target.Url;
             entry_titleOnEdit.Text = target.Title;
@@ -784,6 +847,7 @@ namespace STREAMOR
 
         private async void btn_editStation_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             int targetIndex = radioList.IndexOf(target);
             string title = "";
             string genre = "";
@@ -880,16 +944,19 @@ namespace STREAMOR
 
         private async void btn_cancelEditStation_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await CloseEditStationPage();
         }
 
         private async void imgbtn_backOnEdit_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await CloseEditStationPage();
         }
 
         private async void imgbtn_backOnPlayer_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await ClosePlayerPage();
         }
 
@@ -919,6 +986,7 @@ namespace STREAMOR
 
         private async void imgbtn_player_play_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             try
             {
                 imgbtn_player_play.IsVisible = false;
@@ -926,6 +994,8 @@ namespace STREAMOR
                 vlc.PlayMedia();
                 StartTimer();
                 nowPlayingTarget = target;
+                lbl_now_playing_target.Text = $"<strong>Now listen:</strong> {nowPlayingTarget.Title}";
+                await frame_now_playing_target.TranslateTo(0, 0, 300);
                 await AnimationNowPlayingSong();
             }
             catch (Exception x)
@@ -937,13 +1007,14 @@ namespace STREAMOR
 
         private async void imgbtn_player_pause_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             try
             {
                 vlc.StopMedia();
                 TimerStop();
                 imgbtn_player_play.IsVisible = true;
                 imgbtn_player_pause.IsVisible = false;
-                
+                await frame_now_playing_target.TranslateTo(0, -20,300);
             }
             catch (Exception x)
             {
@@ -954,11 +1025,13 @@ namespace STREAMOR
 
         private async void imgbtn_player_artist_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             await AnimationNowPlayingSong();
         }
 
         private void imgbtn_player_back_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             if (radioList.IndexOf(target) != 0)
             {
                 lv_radios.SelectedItem = radioList.IndexOf(target) - 1;
@@ -992,6 +1065,7 @@ namespace STREAMOR
 
         private void imgbtn_player_farw_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             if (radioList.IndexOf(target) == radioList.Count - 1)
             {
                 lv_radios.SelectedItem = radioList[0];
@@ -1031,6 +1105,7 @@ namespace STREAMOR
 
         private void imgbtn_player_fav_false_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             int index = radioList.IndexOf(target);
             XmlDocument document = new XmlDocument();
             document.Load(xmlFile);
@@ -1056,6 +1131,7 @@ namespace STREAMOR
 
         private void imgbtn_player_fav_true_Clicked(object sender, EventArgs e)
         {
+            MakeVibration();
             int index = radioList.IndexOf(target);
             XmlDocument document = new XmlDocument();
             document.Load(xmlFile);
@@ -1091,6 +1167,100 @@ namespace STREAMOR
                 imgbtn_player_fav_false.IsVisible = true;
                 imgbtn_player_fav_true.IsVisible = false;
             }
+        }
+
+        private async void btn_settings_Clicked(object sender, EventArgs e)
+        {
+            MakeVibration();
+            await CloseMenu();
+            await stack_settings.TranslateTo(0, 0, 250, Easing.SpringOut);
+        }
+
+        private async void imgbtn_settings_back_Clicked(object sender, EventArgs e)
+        {
+            MakeVibration();
+            await CloseSettingsPage();
+        }
+
+        private void picker_theme_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int index = 0;
+            XmlDocument document = new XmlDocument();
+            document.Load(xmlFile);
+            XmlNode settingsNode = document.DocumentElement.FirstChild;
+            
+            switch (picker_theme.SelectedIndex)
+            {
+                case 0 :
+                    theme_Home.Color = Color.Firebrick;
+                    theme_addStation.Color = Color.Firebrick;
+                    theme_editStation.Color = Color.Firebrick;
+                    theme_settings.Color = Color.Firebrick;
+                    theme_player.Color = Color.Firebrick;
+                    index = 0;
+                    break;
+                case 1:
+                    theme_Home.Color = Color.FromHex("#581845");
+                    theme_addStation.Color = Color.FromHex("#581845");
+                    theme_editStation.Color = Color.FromHex("#581845");
+                    theme_settings.Color = Color.FromHex("#581845");
+                    theme_player.Color = Color.FromHex("#581845");
+                    index = 1;
+                    break;
+                case 2:
+                    theme_Home.Color = Color.DarkSlateGray;
+                    theme_addStation.Color = Color.DarkSlateGray;
+                    theme_editStation.Color = Color.DarkSlateGray;
+                    theme_settings.Color = Color.DarkSlateGray;
+                    theme_player.Color = Color.DarkSlateGray;
+                    index = 2;
+                    break;
+                case 3:
+                    theme_Home.Color = Color.FromHex("#313358");
+                    theme_addStation.Color = Color.FromHex("#313358");
+                    theme_editStation.Color = Color.FromHex("#313358");
+                    theme_settings.Color = Color.FromHex("#313358");
+                    theme_player.Color = Color.FromHex("#313358");
+                    index = 3;
+                    break;
+            }
+            settingsNode.ChildNodes[0].InnerText = index.ToString();
+            document.Save(xmlFile);
+        }
+
+        private void picker_vibration_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int index = 0;
+            XmlDocument document = new XmlDocument();
+            document.Load(xmlFile);
+            XmlNode settingsNode = document.DocumentElement.FirstChild;
+
+            switch (picker_vibration.SelectedIndex)
+            {
+                case 0:
+                    index = 0;
+                    MakeVibration();
+                    break;
+                case 1:
+                    index = 1;
+                    break;
+            }
+            settingsNode.ChildNodes[1].InnerText = index.ToString();
+            document.Save(xmlFile);
+        }
+
+        private void MakeVibration()
+        {
+            if (picker_vibration.SelectedIndex == 0)
+            {
+                var duration = TimeSpan.FromSeconds(0.03);
+                Vibration.Vibrate(duration);
+            }
+        }
+
+        private void lbl_now_playing_target_Tapped(object sender, EventArgs e)
+        {
+
         }
     }
 }
