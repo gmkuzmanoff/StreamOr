@@ -529,7 +529,7 @@ namespace STREAMOR
         }
 
         private async void lv_radios_ItemTapped(object sender, ItemTappedEventArgs e)
-        {//#FAFA32
+        {
             Color[] colors = {Color.GreenYellow, Color.Yellow, Color.Aquamarine, Color.SkyBlue, Color.Beige, Color.Orange, Color.Lime};
             int random1 = new Random().Next(0, 6);
             int random2 = new Random().Next(0, 6);
@@ -583,6 +583,7 @@ namespace STREAMOR
         private async void btn_ListenNow_Clicked(object sender, EventArgs e)
         {
             MakeVibration();
+            target = radioList.First(x => x.Title == lbl_selected_radio_title.Text && x.Genre == lbl_selected_radio_genre.Text);
             vlc.LoadMedia(target.Url);
             await stack_player.TranslateTo(0, 0, 250, Easing.SpringOut);
             if (lbl_player_targetTitle.Text != target.Title)
@@ -799,8 +800,8 @@ namespace STREAMOR
         private async void btn_Exit_Clicked(object sender, EventArgs e)
         {
             MakeVibration();
-            var result = await DisplayAlert("Close dialog", "You want to close Streamor?", "Close Streamor", "Not now");
-            if (result == true)
+            var isTrue = await DisplayAlert("Do you want to close Streamor?", "", "Close Streamor", "Not now");
+            if (isTrue)
             {
                 Environment.Exit(0);
             }
@@ -1014,7 +1015,8 @@ namespace STREAMOR
                 TimerStop();
                 imgbtn_player_play.IsVisible = true;
                 imgbtn_player_pause.IsVisible = false;
-                await frame_now_playing_target.TranslateTo(0, -20,300);
+                nowPlayingTarget = null;
+                await frame_now_playing_target.TranslateTo(0, -30,300);
             }
             catch (Exception x)
             {
@@ -1258,9 +1260,26 @@ namespace STREAMOR
             }
         }
 
-        private void lbl_now_playing_target_Tapped(object sender, EventArgs e)
+        private async void lbl_now_playing_target_Tapped(object sender, EventArgs e)
         {
-
+            MakeVibration();
+            target = nowPlayingTarget;
+            await CloseMenu();
+            await CloseAddStationPage();
+            await CloseEditStationPage();
+            await CloseSettingsPage();
+            await ClosePlayerPage();
+            
+            vlc.LoadMedia(target.Url);
+            await stack_player.TranslateTo(0, 0, 250, Easing.SpringOut);
+            lbl_player_targetTitle.Text = target.Title;
+            img_palyer_targetPicture.Source = target.PictureUrl;
+            lbl_player_bitrate.Text = $"{target.Bitrate} Kbps";
+            lbl_player_desc.Text = target.Description;
+            CheckForFavorite();
+            imgbtn_player_play.IsVisible = false;
+            imgbtn_player_pause.IsVisible = true;
+            lbl_nowPlayedSong.Text = "";
         }
     }
 }
