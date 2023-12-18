@@ -1,4 +1,5 @@
-﻿using System;
+﻿using STREAMOR.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -19,6 +20,7 @@ namespace STREAMOR
     {
         System.Timers.Timer timer = new System.Timers.Timer();
         TimeSpan timeCounter = new TimeSpan(0, 0, 0, 0);
+        RadioMetadata radioMetadata = new RadioMetadata();
         Vlc vlc = new Vlc();
         RadioStation target = null;
         RadioStation nowPlayingTarget = null;
@@ -180,7 +182,7 @@ namespace STREAMOR
             await stack_player.TranslateTo(0, 660, 250, Easing.SpringIn);
         }
 
-        public string GetNowPlayingTitleFromIcecastServer(string uri) // get now played
+        public string GetXspfFromIcecastServer(string uri) // get now played
         {
             string strCreator = "";
             string strTitle = "";
@@ -221,245 +223,15 @@ namespace STREAMOR
             return result;
         }
 
-        public async Task<string> GetMetaDataFromIceCastStream(string uri)
-        {
-            string result = "";
-            HttpClient m_httpClient = new HttpClient();
-            HttpResponseMessage response = null;
-            m_httpClient.DefaultRequestHeaders.Add("Icy-MetaData", "1");
-            try
-            {
-                response = await m_httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-                m_httpClient.DefaultRequestHeaders.Remove("Icy-MetaData");
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<string> headerValues;
-                    if (response.Headers.TryGetValues("icy-metaint", out headerValues))
-                    {
-                        string metaIntString = headerValues.First();
-
-                        if (!string.IsNullOrEmpty(metaIntString))
-                        {
-                            int metadataInterval = Convert.ToInt16(metaIntString);
-                            byte[] buffer = new byte[metadataInterval];
-
-                            Stream stream = await response.Content.ReadAsStreamAsync();
-
-                            int numBytesRead = 0;
-                            int numBytesToRead = metadataInterval;
-                            do
-                            {
-                                int n = await stream.ReadAsync(buffer, numBytesRead, 10);
-                                numBytesRead += n;
-                                numBytesToRead -= n;
-                            } while (numBytesToRead > 0);
-
-                            int lengthOfMetaData = stream.ReadByte();
-                            int metaBytesToRead = lengthOfMetaData * 16;
-                            byte[] metadataBytes = new byte[metaBytesToRead];
-                            var bytesRead = await stream.ReadAsync(metadataBytes, 0, metaBytesToRead);
-                            result = System.Text.Encoding.UTF8.GetString(metadataBytes);
-                            stream.Dispose();
-                        }
-
-                    }
-                }
-            }
-            catch
-            {
-                
-            }
-            m_httpClient.Dispose();
-            return result;
-        }
-
-        public async Task<string> GetNowPlayingTitleFromShoutcastServer(string uri) // get now played
-        {
-            WebResponse response = null;
-            string result = "";
-            Uri URL = new Uri(uri);
-            string finalURL = $"{URL.Scheme}://{URL.Host}/currentsong?sid=#"; //For next song "/nextsong?sid=1"
-            WebRequest request = WebRequest.Create(finalURL);
-
-            try
-            {
-                response = await request.GetResponseAsync();
-                StreamReader reader = new StreamReader(response.GetResponseStream());
-                result = reader.ReadLine();
-                reader.Close();
-            }
-            catch
-            {
-                
-            }
-            if (result.Contains('�'))
-            {
-                result = "Unknown title";
-            }
-            return result;
-        }
-
-        public async Task<string> GetFullInfo(string uri) // Get Full metadata popup (icy-metadata)
-        {
-            HttpClient m_httpClient = new HttpClient();
-            HttpResponseMessage response = null;
-            string result = "";
-            m_httpClient.DefaultRequestHeaders.Add("icy-metadata", "1");
-            response = await m_httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-            m_httpClient.DefaultRequestHeaders.Remove("icy-metadata");
-            if (response.IsSuccessStatusCode)
-            {
-                result = response.ToString();
-            }
-            else
-            {
-                result = null;
-            }
-            m_httpClient.Dispose();
-            return result;
-        }
-
-        public async Task<string> GetTitle(string uri) // Get Radio Title (icy-name)
-        {
-            string result = "";
-            HttpClient m_httpClient = new HttpClient();
-            HttpResponseMessage response = null;
-            m_httpClient.DefaultRequestHeaders.Add("icy-metadata", "1");
-            try
-            {
-                response = await m_httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-                m_httpClient.DefaultRequestHeaders.Remove("icy-metadata");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<string> headerValues;
-                    if (response.Headers.TryGetValues("icy-name", out headerValues))
-                    {
-                        string metaIntString = headerValues.First();
-                        if (!string.IsNullOrEmpty(metaIntString))
-                        {
-                            result = metaIntString;
-                        }
-
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                result = null;
-            }
-            m_httpClient.Dispose();
-            return result;
-        }
-
-        public async Task<string> GetGenre(string uri) // Get Radio Genre (icy-genre)
-        {
-            string result = "";
-            HttpClient m_httpClient = new HttpClient();
-            HttpResponseMessage response = null;
-            m_httpClient.DefaultRequestHeaders.Add("icy-metadata", "1");
-            try
-            {
-                response = await m_httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-                m_httpClient.DefaultRequestHeaders.Remove("icy-metadata");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<string> headerValues;
-                    if (response.Headers.TryGetValues("icy-genre", out headerValues))
-                    {
-                        string metaIntString = headerValues.First();
-                        if (!string.IsNullOrEmpty(metaIntString))
-                        {
-                            result = metaIntString;
-                        }
-
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                result = null;
-            }
-            m_httpClient.Dispose();
-            return result;
-        }
-
-        public async Task<string> GetBitrate(string uri) // Get Radio Bitrate (icy-bitrate)
-        {
-            string result = "";
-            HttpClient m_httpClient = new HttpClient();
-            HttpResponseMessage response = null;
-            m_httpClient.DefaultRequestHeaders.Add("icy-metadata", "1");
-            try
-            {
-                response = await m_httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-                m_httpClient.DefaultRequestHeaders.Remove("icy-metadata");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<string> headerValues;
-                    if (response.Headers.TryGetValues("icy-br", out headerValues))
-                    {
-                        string metaIntString = headerValues.First();
-                        if (!string.IsNullOrEmpty(metaIntString))
-                        {
-                            result = metaIntString;
-                        }
-
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                result = null;
-            }
-            m_httpClient.Dispose();
-            return result;
-        }
-
-        public async Task<string> GetDescription(string uri) // Get Radio Description (icy-description)
-        {
-            string result = "";
-            HttpClient m_httpClient = new HttpClient();
-            HttpResponseMessage response = null;
-            m_httpClient.DefaultRequestHeaders.Add("icy-metadata", "1");
-            try
-            {
-                response = await m_httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-                m_httpClient.DefaultRequestHeaders.Remove("icy-metadata");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<string> headerValues;
-                    if (response.Headers.TryGetValues("icy-description", out headerValues))
-                    {
-                        string metaIntString = headerValues.First();
-                        if (!string.IsNullOrEmpty(metaIntString))
-                        {
-                            result = metaIntString;
-                        }
-
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                result = null;
-            }
-            m_httpClient.Dispose();
-            return result;
-        }
-
         private async Task TryGetCurrentSong()
         {
-            string nowPlayingSong = GetNowPlayingTitleFromIcecastServer(target.Url);
+            string nowPlayingSong = GetXspfFromIcecastServer(target.Url);
             if (string.IsNullOrEmpty(nowPlayingSong))
             {
-                nowPlayingSong = await GetNowPlayingTitleFromShoutcastServer(target.Url);
+                nowPlayingSong = await radioMetadata.GetNowPlayingTitleFromShoutcastServer(target.Url);
                 if (string.IsNullOrEmpty(nowPlayingSong))
                 {
-                    string metadata = await GetMetaDataFromIceCastStream(target.Url);
+                    string metadata = await radioMetadata.GetMetaDataFromIceCastStream(target.Url);
                     try
                     {
                         nowPlayingSong = metadata.Split('=')[1].Replace("'", "").Replace(";", "");
@@ -688,7 +460,7 @@ namespace STREAMOR
             {
                 try
                 {
-                    title = await GetTitle(url);
+                    title = await radioMetadata.GetTitle(url);
                 }
                 catch
                 {
@@ -704,7 +476,7 @@ namespace STREAMOR
             {
                 try
                 {
-                    genre = await GetGenre(url);
+                    genre = await radioMetadata.GetGenre(url);
                 }
                 catch
                 {
@@ -720,7 +492,7 @@ namespace STREAMOR
             //Get Bitrate
             try
             {
-                bitrate = await GetBitrate(url);
+                bitrate = await radioMetadata.GetBitrate(url);
             }
             catch
             {
@@ -729,7 +501,7 @@ namespace STREAMOR
             //Get Description
             try
             {
-                description = await GetDescription(url);
+                description = await radioMetadata.GetDescription(url);
             }
             catch
             {
@@ -866,7 +638,7 @@ namespace STREAMOR
             {
                 try
                 {
-                    title = await GetTitle(url);
+                    title = await radioMetadata.GetTitle(url);
                 }
                 catch
                 {
@@ -882,7 +654,7 @@ namespace STREAMOR
             {
                 try
                 {
-                    genre = await GetGenre(url);
+                    genre = await radioMetadata.GetGenre(url);
                 }
                 catch
                 {
@@ -898,7 +670,7 @@ namespace STREAMOR
             //Get Bitrate
             try
             {
-                bitrate = await GetBitrate(url);
+                bitrate = await radioMetadata.GetBitrate(url);
             }
             catch
             {
@@ -907,7 +679,7 @@ namespace STREAMOR
             //Get Description
             try
             {
-                description = await GetDescription(url);
+                description = await radioMetadata.GetDescription(url);
             }
             catch
             {
@@ -1015,8 +787,8 @@ namespace STREAMOR
                 TimerStop();
                 imgbtn_player_play.IsVisible = true;
                 imgbtn_player_pause.IsVisible = false;
-                nowPlayingTarget = null;
-                await frame_now_playing_target.TranslateTo(0, -30,300);
+                target = nowPlayingTarget;
+                await frame_now_playing_target.TranslateTo(0, -40,300);
             }
             catch (Exception x)
             {
