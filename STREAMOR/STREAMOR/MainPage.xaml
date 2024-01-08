@@ -26,8 +26,8 @@
             </StackLayout>
             <!--Searchbar & Label-->
             <StackLayout HorizontalOptions="Fill" Orientation="Horizontal" Margin="0,20,0,7">
-                <Label Text="Home" Padding="10,0" FontSize="34" FontFamily="ARLRDBD.ttf" TextColor="#DAF7A6" VerticalOptions="Center" HorizontalOptions="Start"/>
-                <Frame HorizontalOptions="EndAndExpand" VerticalOptions="Center" HeightRequest="33" Padding="0" Margin="10,0" HasShadow="False" BorderColor="Black" CornerRadius="25" BackgroundColor="Transparent">
+                <Label Text="Home" Padding="10,0" FontSize="34" FontFamily="ARLRDBD.ttf" TextColor="Tan" VerticalOptions="Center" HorizontalOptions="Start"/>
+                <Frame HorizontalOptions="EndAndExpand" VerticalOptions="Center" HeightRequest="35" Padding="0" Margin="10,0" HasShadow="False" BorderColor="Black" CornerRadius="5" BackgroundColor="Transparent">
                     <SearchBar x:Name="sb_searchBar" WidthRequest="200" Placeholder="...search" BackgroundColor="AntiqueWhite" FontFamily="RobotoCondensed-Italic.ttf" TextChanged="sb_searchBar_TextChanged"/>
                 </Frame>
             </StackLayout>
@@ -60,8 +60,8 @@
                     <Button x:Name="btn_ListenNow" Text="▶ Listen now" TextTransform="None" Margin="2" CornerRadius="8" FontSize="16" Background="#FF5733" TextColor="#DAF7A6" FontFamily="RobotoCondensed-Regular.ttf" Clicked="btn_ListenNow_Clicked"/>
                 </Frame>
                 <StackLayout x:Name="stack_onAir" IsVisible="false" Grid.Column="1" Grid.Row="1" Opacity="0.7" VerticalOptions="End" Margin="0,0,0,10" HorizontalOptions="End" Orientation="Horizontal" BackgroundColor="Transparent">
-                    <ImageButton x:Name="btn_edit" Source="icon_edit" WidthRequest="34" Padding="8" CornerRadius="20" BackgroundColor="Tan" VerticalOptions="Center" HorizontalOptions="EndAndExpand" Clicked="btn_edit_Clicked"/>
-                    <ImageButton x:Name="btn_delete" Source="icon_delete" WidthRequest="34" Padding="7" CornerRadius="20" BackgroundColor="Tan" VerticalOptions="Center" HorizontalOptions="EndAndExpand" Margin="10,0" Clicked="btn_delete_Clicked"/>
+                    <!--<ImageButton x:Name="btn_edit" Source="icon_edit" WidthRequest="34" Padding="8" CornerRadius="20" BackgroundColor="Tan" VerticalOptions="Center" HorizontalOptions="EndAndExpand" Clicked="btn_edit_Clicked"/>
+                    <ImageButton x:Name="btn_delete" Source="icon_delete" WidthRequest="34" Padding="7" CornerRadius="20" BackgroundColor="Tan" VerticalOptions="Center" HorizontalOptions="EndAndExpand" Margin="10,0" Clicked="btn_delete_Clicked"/>-->
                 </StackLayout>
             </Grid>
             <!--Picker & Label-->
@@ -87,6 +87,10 @@
                     <ListView.ItemTemplate>
                         <DataTemplate x:Name="dt_list">
                             <ViewCell Height="90">
+                                <ViewCell.ContextActions>
+                                    <MenuItem Text="Edit" IconImageSource="iedit" CommandParameter="{Binding Url}" Clicked="MenuItem_edit_Clicked"/>
+                                    <MenuItem Text="Delete" IconImageSource="idelete" CommandParameter="{Binding Url}" Clicked="MenuItem_delete_Clicked"/>
+                                </ViewCell.ContextActions>
                                 <Grid Padding="0,10">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -98,9 +102,23 @@
                                     <Frame Padding="0" CornerRadius="10" VerticalOptions="FillAndExpand" BackgroundColor="Transparent">
                                         <Image Grid.Column="0" Source="{Binding PictureUrl}" Aspect="AspectFill"/>
                                     </Frame>
+                                    <Image Source="favorite_true" Grid.Column="0" TranslationX="35" TranslationY="-28" BackgroundColor="Transparent" Margin="23" HorizontalOptions="End" Aspect="AspectFit">
+                                        <Image.Style>
+                                            <Style TargetType="{x:Type Image}">
+                                                <Style.Triggers>
+                                                    <DataTrigger TargetType="{x:Type Image}" Binding="{Binding IsFavorite}" Value="true">
+                                                        <Setter Property="IsVisible" Value="true"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="{x:Type Image}" Binding="{Binding IsFavorite}" Value="false">
+                                                        <Setter Property="IsVisible" Value="false"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
                                     <StackLayout Grid.Column="1" HorizontalOptions="Start" Padding="10,0" VerticalOptions="Center">
-                                        <Label Text="{Binding Title}" FontSize="18" TextColor="#DAF7A6" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                                        <Label Text="{Binding Genre}" FontSize="16" TextColor="AntiqueWhite" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding Title}" FontSize="18" TextColor="Moccasin" FontFamily="ARLRDBD.ttf" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding Genre}" FontSize="16" TextColor="AntiqueWhite" FontFamily="ARLRDBD.ttf" LineBreakMode="TailTruncation"/>
                                     </StackLayout>
                                 </Grid>
                             </ViewCell>
@@ -116,33 +134,22 @@
             </StackLayout.GestureRecognizers>
         </StackLayout>
         <!--MenuBar & Logo-->
-        <StackLayout x:Name="sl_Menu" Padding="0" TranslationY="-650">
+        <StackLayout x:Name="sl_Menu" TranslationY="-500" Padding="0" HeightRequest="400" VerticalOptions="Start">
             <StackLayout.Background>
                 <LinearGradientBrush EndPoint="0,0.8">
-                    <GradientStop Color="FloralWhite" Offset="0.2"/>
+                    <GradientStop Color="Gray" Offset="0.2"/>
                     <GradientStop Color="Black" Offset="1.0"/>
                 </LinearGradientBrush>
             </StackLayout.Background>
-            <Label Text="Menu" HorizontalOptions="End" FontSize="24" Margin="10,285,15,20" FontFamily="ARLRDBD.ttf" TextColor="Black"/>
-            <Grid Padding="0" BackgroundColor="Transparent">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="Center">
-                    <Frame Padding="0" CornerRadius="5" BackgroundColor="Transparent">
-                        <ImageButton x:Name="btn_addStation" BackgroundColor="Transparent" HeightRequest="80" Source="icon_plus" HorizontalOptions="Center" VerticalOptions="Center" Clicked="btn_addStation_Clicked"/>
-                    </Frame>
-                    <Label Text="Add Radio" HorizontalOptions="Center" FontSize="18" FontFamily="RobotoCondensed-Regular.ttf" TextColor="WhiteSmoke"/>
-                </StackLayout>
-            </Grid>
-            <StackLayout VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="900" Orientation="Horizontal" Margin="10,12" >
+            <!--<Label Text="Menu" HorizontalOptions="End" FontSize="24" Margin="10,285,15,20" FontFamily="ARLRDBD.ttf" TextColor="Black"/>-->
+
+            <StackLayout HorizontalOptions="Center" VerticalOptions="EndAndExpand" Margin="20" TranslationY="0">
+                <Frame Padding="0" CornerRadius="5" BackgroundColor="Transparent">
+                    <ImageButton x:Name="btn_addStation" BackgroundColor="Transparent" HeightRequest="70" Source="icon_plus" HorizontalOptions="Center" VerticalOptions="Center" Clicked="btn_addStation_Clicked"/>
+                </Frame>
+                <Label Text="Add Radio" HorizontalOptions="Center" FontSize="18" FontFamily="RobotoCondensed-Regular.ttf" TextColor="WhiteSmoke"/>
+            </StackLayout>
+            <StackLayout VerticalOptions="EndAndExpand" HorizontalOptions="CenterAndExpand" WidthRequest="1000" Orientation="Horizontal" Margin="10,12" >
                 <ImageButton BackgroundColor="Transparent" HorizontalOptions="StartAndExpand" Source="bars_solid.png" WidthRequest="23" Margin="5,1" Clicked="lbl_menu_icon_Clicked"/>
                 <Button x:Name="btn_settings" Text="settings" FontFamily="RobotoCondensed-Regular.ttf" HorizontalOptions="EndAndExpand" Clicked="btn_settings_Clicked"/>
             </StackLayout>
@@ -158,28 +165,28 @@
             <StackLayout HeightRequest="51" Orientation="Horizontal" BackgroundColor="Black">
                 <ImageButton x:Name="imgbtn_back" BackgroundColor="Transparent" Source="back_icon.png" WidthRequest="30" Margin="10,0" HorizontalOptions="Start" VerticalOptions="Center" Clicked="imgbtn_back_Clicked"/>
             </StackLayout>
-            <Label Text="New Radio" Padding="10,0" FontSize="34" Margin="0,20,0,0" FontFamily="ARLRDBD.ttf" TextColor="#DAF7A6" VerticalOptions="Center" HorizontalOptions="Start"/>
+            <Label Text="New Radio" Padding="10,0" FontSize="34" Margin="0,20,0,0" FontFamily="ARLRDBD.ttf" TextColor="Tan" VerticalOptions="Center" HorizontalOptions="Start"/>
 
             <StackLayout Margin="10,30">
                 <Label Text="Station URL *:" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0" Margin="0,0,0,30">
-                    <Entry x:Name="entry_stationUrl" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3" Margin="0,0,0,30">
+                    <Entry x:Name="entry_stationUrl" BackgroundColor="Tan" FontFamily="RobotoCondensed-BoldItalic.ttf" FontSize="Body"/>
                 </Frame>
                 <Label Text="Title (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0">
-                    <Entry x:Name="entry_title" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3">
+                    <Entry x:Name="entry_title" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
                 <Label Text="Genre (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0">
-                    <Entry x:Name="entry_genre" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3">
+                    <Entry x:Name="entry_genre" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
                 <Label Text="Picture URL (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0" Margin="0,0,0,30">
-                    <Entry x:Name="entry_pictureUrl" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3" Margin="0,0,0,30">
+                    <Entry x:Name="entry_pictureUrl" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" Spacing="25">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="25">
                     <Frame CornerRadius="10" Padding="0" BackgroundColor="ForestGreen">
-                        <Button x:Name="btn_okAddStation" BackgroundColor="Transparent" Text="OK" TextColor="AntiqueWhite" FontSize="16" FontAttributes="Bold" Clicked="btn_okAddStation_Clicked"/>
+                        <Button x:Name="btn_okAddStation" BackgroundColor="Transparent" Text="Add" TextColor="AntiqueWhite" FontSize="16" FontAttributes="Bold" Clicked="btn_okAddStation_Clicked"/>
                     </Frame>
                     <Frame CornerRadius="10" Padding="0" BackgroundColor="red">
                         <Button x:Name="btn_cancelAddStation" BackgroundColor="Transparent" Text="CANCEL" TextColor="AntiqueWhite" FontSize="16" FontAttributes="Bold" Clicked="btn_cancelAddStation_Clicked"/>
@@ -198,26 +205,26 @@
             <StackLayout HeightRequest="51" Orientation="Horizontal" BackgroundColor="Black">
                 <ImageButton x:Name="imgbtn_backOnEdit" BackgroundColor="Transparent" Source="back_icon.png" WidthRequest="30" Margin="10,0" HorizontalOptions="Start" VerticalOptions="Center" Clicked="imgbtn_backOnEdit_Clicked"/>
             </StackLayout>
-            <Label Text="Edit Radio" Padding="10,0" FontSize="34" Margin="0,20,0,0" FontFamily="ARLRDBD.ttf" TextColor="#DAF7A6" VerticalOptions="Center" HorizontalOptions="Start"/>
+            <Label Text="Edit Radio" Padding="10,0" FontSize="34" Margin="0,20,0,0" FontFamily="ARLRDBD.ttf" TextColor="Tan" VerticalOptions="Center" HorizontalOptions="Start"/>
 
             <StackLayout Margin="10,30">
                 <Label Text="Station URL *:" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0" Margin="0,0,0,30">
-                    <Entry x:Name="entry_stationUrlOnEdit" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3" Margin="0,0,0,30">
+                    <Entry x:Name="entry_stationUrlOnEdit" BackgroundColor="Tan" FontFamily="RobotoCondensed-BoldItalic.ttf" FontSize="Body"/>
                 </Frame>
                 <Label Text="Title (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0">
-                    <Entry x:Name="entry_titleOnEdit" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3">
+                    <Entry x:Name="entry_titleOnEdit" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
                 <Label Text="Genre (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0">
-                    <Entry x:Name="entry_genreOnEdit" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3">
+                    <Entry x:Name="entry_genreOnEdit" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
                 <Label Text="Picture URL (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
-                <Frame CornerRadius="25" Padding="0" Margin="0,0,0,30">
-                    <Entry x:Name="entry_pictureUrlOnEdit" BackgroundColor="AntiqueWhite"/>
+                <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3" Margin="0,0,0,30">
+                    <Entry x:Name="entry_pictureUrlOnEdit" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" Spacing="25">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="25">
                     <Frame CornerRadius="10" Padding="0" BackgroundColor="ForestGreen">
                         <Button x:Name="btn_editStation" BackgroundColor="Transparent" Text="EDIT" TextColor="AntiqueWhite" FontSize="16" FontAttributes="Bold" Clicked="btn_editStation_Clicked"/>
                     </Frame>
@@ -238,7 +245,7 @@
             <StackLayout HeightRequest="51" Orientation="Horizontal" BackgroundColor="Black">
                 <ImageButton x:Name="imgbtn_settings_back" BackgroundColor="Transparent" Source="back_icon.png" WidthRequest="30" Margin="10,0" HorizontalOptions="Start" VerticalOptions="Center" Clicked="imgbtn_settings_back_Clicked"/>
             </StackLayout>
-            <Label Text="Settings" Padding="10,0" FontSize="34" Margin="0,20,0,0" FontFamily="ARLRDBD.ttf" TextColor="#DAF7A6" VerticalOptions="Center" HorizontalOptions="Start"/>
+            <Label Text="Settings" Padding="10,0" FontSize="34" Margin="0,20,0,0" FontFamily="ARLRDBD.ttf" TextColor="Tan" VerticalOptions="Center" HorizontalOptions="Start"/>
             <StackLayout>
                 <StackLayout Orientation="Horizontal" Margin="10,30,0,15">
                     <Label Text="Theme : " TextColor="WhiteSmoke" FontSize="22" HorizontalTextAlignment="Start"/>
@@ -276,14 +283,14 @@
                 <ImageButton x:Name="imgbtn_backOnPlayer" BackgroundColor="Transparent" Source="down_icon" WidthRequest="30" HorizontalOptions="Start" VerticalOptions="Center" Clicked="imgbtn_backOnPlayer_Clicked"/>
             </StackLayout>
             <Label x:Name="lbl_player_targetTitle" Padding="10,0" FontSize="23" Margin="0,20,0,0" HeightRequest="50" FontFamily="ARLRDBD.ttf" TextColor="AntiqueWhite" BackgroundColor="Transparent" VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" MaxLines="2" LineBreakMode="TailTruncation"
-                   xct:ShadowEffect.Color="DarkCyan"
-                   xct:ShadowEffect.OffsetY="5"
-                   xct:ShadowEffect.OffsetX="5"
-                   xct:ShadowEffect.Radius="5"/>
+                   xct:ShadowEffect.Color="RosyBrown"
+                   xct:ShadowEffect.OffsetY="15"
+                   xct:ShadowEffect.OffsetX="15"
+                   xct:ShadowEffect.Radius="15"/>
             <Frame CornerRadius="200" Padding="0" BackgroundColor="Transparent" HorizontalOptions="Center" HeightRequest="220" WidthRequest="220" Margin="30,30,30,5">
                 <Image x:Name="img_palyer_targetPicture" Opacity="0.8" Aspect="AspectFill"/>
             </Frame>
-            <Label x:Name="lbl_nowPlayedSong" Text="" Opacity="0" HorizontalOptions="Center" HeightRequest="40" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="WhiteSmoke" Margin="20,10" FontSize="17" TextType="Html" MaxLines="2" FontFamily="RobotoCondensed-Regular.ttf" LineBreakMode="TailTruncation"/>
+            <Label x:Name="lbl_nowPlayedSong" Text="" Opacity="0" HorizontalOptions="Center" HeightRequest="41" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="WhiteSmoke" Margin="20,10" FontSize="17" TextType="Html" MaxLines="2" FontFamily="RobotoCondensed-Regular.ttf" LineBreakMode="TailTruncation"/>
             <ProgressBar x:Name="pbar_player_progressBar" HorizontalOptions="Fill" Margin="20,5,20,0" ProgressColor="DeepSkyBlue"/>
             <StackLayout Orientation="Horizontal" Margin="20,0">
                 <Label x:Name="lbl_player_timer" Text="00:00" TextColor="WhiteSmoke" FontFamily="ARLRDBD.ttf" FontSize="12"/>

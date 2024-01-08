@@ -3,6 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <AssemblyName>STREAMOR</AssemblyName>
+    <Authors>GMKuzmanoff</Authors>
+    <Company>GMKuzmanoff</Company>
+    <Description>Online radio stream application.</Description>
+    <PackageId>Streamor</PackageId>
+    <Product>Streamor</Product>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl />
+    <Copyright>GMKuzmanoff (C) 2023</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,6 +29,10 @@
     <None Remove="Resources\Fonts\RobotoCondensed\RobotoCondensed-LightItalic.ttf" />
     <None Remove="Resources\Fonts\RobotoCondensed\RobotoCondensed-Regular.ttf" />
     <None Remove="Resources\Fonts\RussoOne-Regular.ttf" />
+    <None Include="..\STREAMOR.Android\Resources\drawable\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

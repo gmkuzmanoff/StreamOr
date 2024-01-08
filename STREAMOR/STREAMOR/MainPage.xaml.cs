@@ -1,4 +1,7 @@
-﻿using STREAMOR.Models;
+﻿using Android.Content;
+using Android.Views;
+using Android.Widget;
+using STREAMOR.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -35,7 +38,7 @@ namespace STREAMOR
             PermissionsGrand();
             
             InitializeComponent();
-
+            
             GetSettings();
             picker_sort.SelectedIndex = 0;
         }
@@ -139,13 +142,13 @@ namespace STREAMOR
         {
             sl_MenuBackground.IsVisible = true;
             await sl_MenuBackground.FadeTo(0.5, 200);
-            await sl_Menu.TranslateTo(0, -270, 200, Easing.SpringOut);
+            await sl_Menu.TranslateTo(0, 0, 200, Easing.SpringOut);
             counterMenuTapping = 1;
         }
 
         private async Task CloseMenu()
         {
-            await sl_Menu.TranslateTo(0, -650, 200, Easing.SpringIn);
+            await sl_Menu.TranslateTo(0, -500, 200, Easing.SpringIn);
             await sl_MenuBackground.FadeTo(0, 200);
             sl_MenuBackground.IsVisible = false;
             counterMenuTapping = 0;
@@ -242,7 +245,7 @@ namespace STREAMOR
                     }
                 }
             }
-            lbl_nowPlayedSong.Text = nowPlayingSong.Trim();
+            lbl_nowPlayedSong.Text = nowPlayingSong.Trim().Replace("StreamUrl","");
         }
 
         private void XmlDataProvider(ObservableCollection<RadioStation> radioList)
@@ -323,12 +326,12 @@ namespace STREAMOR
             await lbl_selected_radio_title.TranslateTo(0, 0, 150, Easing.SpringOut);
 
             //Button "Edit" animation
-            await btn_edit.RotateYTo(180, 150);
-             btn_edit.RotateYTo(0, 100);
+            //await btn_edit.RotateYTo(180, 150);
+            // btn_edit.RotateYTo(0, 100);
 
             //Button "Delete" animation
-            await btn_delete.RotateYTo(90, 150);
-             btn_delete.RotateYTo(0, 100);
+            //await btn_delete.RotateYTo(90, 150);
+            // btn_delete.RotateYTo(0, 100);
 
            
         }
@@ -344,7 +347,7 @@ namespace STREAMOR
                     lv_radios.ItemsSource = radioList.OrderByDescending(x => x.Title);
                     break;
                 case 3:
-                    lv_radios.ItemsSource = radioList.Where(x => x.IsFavorite);
+                    lv_radios.ItemsSource = radioList.OrderByDescending(x => x.IsFavorite);
                     break;
                 default:
                     lv_radios.ItemsSource = radioList;
@@ -757,7 +760,7 @@ namespace STREAMOR
             });
         }
 
-        private async void imgbtn_player_play_Clicked(object sender, EventArgs e)
+        public async void imgbtn_player_play_Clicked(object sender, EventArgs e)
         {
             MakeVibration();
             try
@@ -880,7 +883,11 @@ namespace STREAMOR
         private void imgbtn_player_fav_false_Clicked(object sender, EventArgs e)
         {
             MakeVibration();
-            int index = radioList.IndexOf(target);
+            DependencyService.Register<ILaunchActivity>();
+            DependencyService.Get<ILaunchActivity>().MakeToastForAddToFavorites(target.Title);
+            int indexTarget = radioList.IndexOf(target);
+            int indexPickerSort = picker_sort.SelectedIndex;
+            picker_sort.SelectedIndex = 0;
             XmlDocument document = new XmlDocument();
             document.Load(xmlFile);
             XmlNodeList nodes = document.GetElementsByTagName("Station");
@@ -894,11 +901,12 @@ namespace STREAMOR
             }
             
             targetElement.ChildNodes[6].InnerText = "true";
-
+            
             document.Save(xmlFile);
             radioList.Clear();
             XmlDataProvider(radioList);
-            target = radioList.ElementAt(index);
+            target = radioList.ElementAt(indexTarget);
+            picker_sort.SelectedIndex = indexPickerSort;
             imgbtn_player_fav_false.IsVisible = false;
             imgbtn_player_fav_true.IsVisible = true;
         }
@@ -906,7 +914,11 @@ namespace STREAMOR
         private void imgbtn_player_fav_true_Clicked(object sender, EventArgs e)
         {
             MakeVibration();
+            DependencyService.Register<ILaunchActivity>();
+            DependencyService.Get<ILaunchActivity>().MakeToastForRemoveToFavorites(target.Title);
             int index = radioList.IndexOf(target);
+            int indexPickerSort = picker_sort.SelectedIndex;
+            picker_sort.SelectedIndex = 0;
             XmlDocument document = new XmlDocument();
             document.Load(xmlFile);
             XmlNodeList nodes = document.GetElementsByTagName("Station");
@@ -925,6 +937,7 @@ namespace STREAMOR
             radioList.Clear();
             XmlDataProvider(radioList);
             target = radioList.ElementAt(index);
+            picker_sort.SelectedIndex = indexPickerSort;
             imgbtn_player_fav_false.IsVisible = true;
             imgbtn_player_fav_true.IsVisible = false;
         }
@@ -1052,6 +1065,49 @@ namespace STREAMOR
             imgbtn_player_play.IsVisible = false;
             imgbtn_player_pause.IsVisible = true;
             lbl_nowPlayedSong.Text = "";
+        }
+
+        private async void MenuItem_edit_Clicked(object sender, EventArgs e)
+        {
+            MakeVibration();
+            MenuItem url = (MenuItem)sender;
+            target = radioList.First(x => x.Url == url.CommandParameter.ToString());
+            
+            await stack_editStation.TranslateTo(0, 0, 250, Easing.SpringOut);
+            entry_stationUrlOnEdit.Text = target.Url;
+            entry_titleOnEdit.Text = target.Title;
+            entry_genreOnEdit.Text = target.Genre;
+            entry_pictureUrlOnEdit.Text = target.PictureUrl;
+        }
+
+        private async void MenuItem_delete_Clicked(object sender, EventArgs e)
+        {
+            MakeVibration();
+            MenuItem url = (MenuItem)sender;
+            target = radioList.First(x => x.Url == url.CommandParameter.ToString());
+
+            bool result = await DisplayAlert("ℹ️ Confirm", $"DELETE ({target.Title})!\nAre you sure?", "Delete", "Cancel");
+            if (result)
+            {
+                XmlDocument document = new XmlDocument();
+                document.Load(xmlFile);
+                XmlNodeList nodes = document.GetElementsByTagName("Station");
+                XmlNode targetElement = null;
+                foreach (XmlNode node in nodes)
+                {
+                    if (node.Attributes["id"].Value == target.Url)
+                    {
+                        targetElement = node;
+                    }
+                }
+                targetElement.ParentNode.RemoveChild(targetElement);
+                document.Save(xmlFile);
+                radioList.Clear();
+                XmlDataProvider(radioList);
+                stack_onAir.IsVisible = false;
+                lbl_selected_radio_title.Text = "";
+                lbl_selected_radio_genre.Text = "";
+            }
         }
     }
 }

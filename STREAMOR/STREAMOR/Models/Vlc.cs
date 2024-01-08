@@ -50,7 +50,7 @@ namespace STREAMOR
             {
                 media = new Media(LibVLC, new Uri(station));
             }
-            catch (Exception x)
+            catch
             {
                 media = null;
                 return;
