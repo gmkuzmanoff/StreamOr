@@ -1,14 +1,9 @@
-﻿using Android.Content;
-using Android.Views;
-using Android.Widget;
-using STREAMOR.Models;
+﻿using STREAMOR.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -241,7 +236,7 @@ namespace STREAMOR
                     }
                     catch
                     {
-
+                        nowPlayingSong = "There is no information about current title";
                     }
                 }
             }
@@ -386,14 +381,17 @@ namespace STREAMOR
                         return radioList.OrderBy(x => x.Title);
                     case 2:
                         return radioList.OrderByDescending(x => x.Title);
+                    case 3:
+                        return radioList.OrderByDescending(x => x.IsFavorite);
                     default:
                         return radioList;
                 }
             }
             else
             {
-                lbl_allRadios.Text = $"Found {radioList.Where(p => p.Title.ToLower().Contains(searchText)).Count()}";
-                return radioList.Where(p => p.Title.ToLower().Contains(searchText));
+                int titlesCount = radioList.Where(p => p.Title.ToLower().Contains(searchText.ToLower()) || p.Genre.ToLower().Contains(searchText.ToLower())).Count();
+                lbl_allRadios.Text = $"Found {titlesCount}";
+                return radioList.Where(p => p.Title.ToLower().Contains(searchText.ToLower()) || p.Genre.ToLower().Contains(searchText.ToLower()));
             }
 
         }
@@ -748,7 +746,7 @@ namespace STREAMOR
                      {
                          await TryGetCurrentSong();
                      });
-                    if (string.IsNullOrWhiteSpace(lbl_nowPlayedSong.Text))
+                    if (string.IsNullOrWhiteSpace(lbl_nowPlayedSong.Text) || lbl_nowPlayedSong.Text == "There is no information about current title")
                     {
                         return false;
                     }

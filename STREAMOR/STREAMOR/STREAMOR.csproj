@@ -7,8 +7,8 @@
     <Authors>GMKuzmanoff</Authors>
     <Company>GMKuzmanoff</Company>
     <Description>Online radio stream application.</Description>
-    <PackageId>Streamor</PackageId>
-    <Product>Streamor</Product>
+    <PackageId>StreamOr</PackageId>
+    <Product>StreamOr</Product>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl />
     <Copyright>GMKuzmanoff (C) 2023</Copyright>
