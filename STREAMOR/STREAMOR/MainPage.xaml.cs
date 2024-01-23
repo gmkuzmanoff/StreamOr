@@ -31,9 +31,8 @@ namespace STREAMOR
         public MainPage()
         {
             PermissionsGrand();
-            
             InitializeComponent();
-            
+
             GetSettings();
             picker_sort.SelectedIndex = 0;
         }
@@ -62,9 +61,10 @@ namespace STREAMOR
             timer.Interval = 1000;
             if (nowPlayingTarget == target)
             {
-                int min = int.Parse(lbl_player_timer.Text.Split(':')[0]);
-                int sec = int.Parse(lbl_player_timer.Text.Split(':')[1]);
-                timeCounter = new TimeSpan(0, 0, min, sec);
+                int hour = int.Parse(lbl_player_timer.Text.Split(':')[0]);
+                int min = int.Parse(lbl_player_timer.Text.Split(':')[1]);
+                int sec = int.Parse(lbl_player_timer.Text.Split(':')[2]);
+                timeCounter = new TimeSpan(0, hour, min, sec);
             }
             else
             {
@@ -87,7 +87,7 @@ namespace STREAMOR
             timeCounter += TimeSpan.FromSeconds(1);
             Device.BeginInvokeOnMainThread(() =>
             {
-                lbl_player_timer.Text = timeCounter.ToString(@"mm\:ss");
+                lbl_player_timer.Text = timeCounter.ToString(@"hh\:mm\:ss");
                 pbar_player_progressBar.Progress = timeCounter.TotalSeconds / 5000;
             });
             
@@ -123,14 +123,16 @@ namespace STREAMOR
 
         private async void PermissionsGrand()
         {
-            var statusWrite = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            var status = await Permissions.RequestAsync<Permissions.StorageRead>();
 
-            if (statusWrite == PermissionStatus.Granted)
+            if (status == PermissionStatus.Granted)
             {
                 CreateDirAndFile();
             }
             else
-            { System.Environment.Exit(0); }
+            {
+                Environment.Exit(0);
+            }
         }
 
         private async Task OpenMenu()
@@ -1015,7 +1017,7 @@ namespace STREAMOR
 
         private void picker_vibration_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int index = 0;
+            int index = 1;
             XmlDocument document = new XmlDocument();
             document.Load(xmlFile);
             XmlNode settingsNode = document.DocumentElement.FirstChild;

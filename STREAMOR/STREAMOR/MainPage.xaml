@@ -100,9 +100,9 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Frame Padding="0" CornerRadius="10" VerticalOptions="FillAndExpand" BackgroundColor="Transparent">
-                                        <Image Grid.Column="0" Source="{Binding PictureUrl}" Aspect="AspectFill"/>
+                                        <Image Grid.Column="0" Source="{Binding PictureUrl}" Opacity="1" Aspect="AspectFill"/>
                                     </Frame>
-                                    <Image Source="favorite_true" Grid.Column="0" TranslationX="35" TranslationY="-28" BackgroundColor="Transparent" Margin="23" HorizontalOptions="End" Aspect="AspectFit">
+                                    <Image Source="favorite_true" Grid.Column="1" Opacity="0.8" TranslationX="23" TranslationY="-25" BackgroundColor="Transparent" Margin="26" HorizontalOptions="End" Aspect="AspectFit">
                                         <Image.Style>
                                             <Style TargetType="{x:Type Image}">
                                                 <Style.Triggers>
@@ -168,19 +168,19 @@
             <Label Text="New Radio" Padding="10,0" FontSize="34" Margin="0,20,0,0" FontFamily="ARLRDBD.ttf" TextColor="Tan" VerticalOptions="Center" HorizontalOptions="Start"/>
 
             <StackLayout Margin="10,30">
-                <Label Text="Station URL *:" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
+                <Label Text="Station URL *" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
                 <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3" Margin="0,0,0,30">
                     <Entry x:Name="entry_stationUrl" BackgroundColor="Tan" FontFamily="RobotoCondensed-BoldItalic.ttf" FontSize="Body"/>
                 </Frame>
-                <Label Text="Title (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
+                <Label Text="Title (optional)" TextColor="AntiqueWhite" FontSize="18" Margin="10,0" FontFamily="RobotoCondensed-Regular.ttf"/>
                 <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3">
                     <Entry x:Name="entry_title" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
-                <Label Text="Genre (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
+                <Label Text="Genre (optional)" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
                 <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3">
                     <Entry x:Name="entry_genre" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
-                <Label Text="Picture URL (optional):" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
+                <Label Text="Picture URL (optional)" TextColor="AntiqueWhite" FontSize="18" Margin="10,10,0,0" FontFamily="RobotoCondensed-Regular.ttf"/>
                 <Frame CornerRadius="5" HeightRequest="38" BackgroundColor="DimGray" Padding="3" Margin="0,0,0,30">
                     <Entry x:Name="entry_pictureUrl" BackgroundColor="Tan" FontFamily="RobotoCondensed-Italic.ttf" FontSize="Body"/>
                 </Frame>
@@ -293,7 +293,7 @@
             <Label x:Name="lbl_nowPlayedSong" Text="" Opacity="0" HorizontalOptions="Center" HeightRequest="41" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="WhiteSmoke" Margin="20,10" FontSize="17" TextType="Html" MaxLines="2" FontFamily="RobotoCondensed-Regular.ttf" LineBreakMode="TailTruncation"/>
             <ProgressBar x:Name="pbar_player_progressBar" HorizontalOptions="Fill" Margin="20,5,20,0" ProgressColor="DeepSkyBlue"/>
             <StackLayout Orientation="Horizontal" Margin="20,0">
-                <Label x:Name="lbl_player_timer" Text="00:00" TextColor="WhiteSmoke" FontFamily="ARLRDBD.ttf" FontSize="12"/>
+                <Label x:Name="lbl_player_timer" Text="00:00:00" TextColor="WhiteSmoke" FontFamily="ARLRDBD.ttf" FontSize="12"/>
                 <Label x:Name="lbl_player_bitrate" Text="" HorizontalOptions="EndAndExpand" TextColor="WhiteSmoke" FontSize="12" FontFamily="ARLRDBD.ttf"/>
             </StackLayout>
             <Grid HorizontalOptions="Center" VerticalOptions="EndAndExpand" Margin="5">
