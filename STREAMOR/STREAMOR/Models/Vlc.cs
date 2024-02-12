@@ -11,7 +11,7 @@ namespace STREAMOR
     public class Vlc
     {
         //VLC Lib
-        public event PropertyChangedEventHandler Property_Changed;
+        public event PropertyChangedEventHandler PropertyChanged;
         private Media media = null;
         private LibVLC _libVLC;
         /// <summary>
@@ -23,7 +23,7 @@ namespace STREAMOR
             private set => Set(nameof(LibVLC), ref _libVLC, value);
         }
 
-        private LibVLCSharp.Shared.MediaPlayer _Player;
+        private MediaPlayer _Player;
         /// <summary>
         /// Gets the <see cref="LibVLCSharp.Shared.MediaPlayer"/> instance.
         /// </summary>
@@ -38,7 +38,7 @@ namespace STREAMOR
             if (field == null && value != null || field != null && !field.Equals(value))
             {
                 field = value;
-                Property_Changed?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
@@ -55,7 +55,7 @@ namespace STREAMOR
                 media = null;
                 return;
             }
-
+            
         }
 
         public void PlayMedia()

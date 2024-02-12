@@ -32,7 +32,7 @@ namespace STREAMOR
         {
             PermissionsGrand();
             InitializeComponent();
-
+            
             GetSettings();
             picker_sort.SelectedIndex = 0;
         }
