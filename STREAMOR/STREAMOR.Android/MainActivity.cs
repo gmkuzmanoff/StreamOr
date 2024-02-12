@@ -1,17 +1,12 @@
-﻿using System;
-using Android.App;
-using Android.Content.PM;
-using Android.Runtime;
-using Android.OS;
+﻿using Android.App;
 using Android.Content;
-using Android.Views;
-using Android.Widget;
-using Android.Support.V4.Media.Session;
-using Android.Bluetooth;
+using Android.Content.PM;
+using Android.OS;
+using Android.Runtime;
 
 namespace STREAMOR.Droid
 {
-    [Activity(Label = "STREAMOR", Icon = "@mipmap/icon", Theme = "@style/splashscreen", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Portrait)]
+    [Activity(Label = "StreamOr", Icon = "@mipmap/icon", Theme = "@style/splashscreen", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Portrait)]
     
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
@@ -26,6 +21,7 @@ namespace STREAMOR.Droid
             RegisterReceiver(receiver, new IntentFilter(Intent.ActionHeadsetPlug));
             RegisterReceiver(receiver, new IntentFilter(Intent.ActionMediaButton));
             LoadApplication(new App());
+            
             //PublishBroadcast();
         }
 
@@ -42,13 +38,13 @@ namespace STREAMOR.Droid
             base.OnDestroy();
         }
 
-        public void PublishBroadcast()
-        {
-            Intent intent = new Intent();
-            intent.SetAction(Intent.ActionMediaButton);
-            intent.PutExtra(Intent.ActionMediaButton, 272);
-            SendBroadcast(intent);
-        }
+        //public void PublishBroadcast()
+        //{
+        //    Intent intent = new Intent();
+        //    intent.SetAction(Intent.ActionMediaButton);
+        //    intent.PutExtra(Intent.ActionMediaButton, 272);
+        //    SendBroadcast(intent);
+        //}
     }
 
 }
