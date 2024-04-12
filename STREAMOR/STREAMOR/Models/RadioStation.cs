@@ -36,7 +36,8 @@ namespace STREAMOR
                 title = value;
             }
         }
-        public string Genre {
+        public string Genre
+        {
             get => genre;
             set
             {
